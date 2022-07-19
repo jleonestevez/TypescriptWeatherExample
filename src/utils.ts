@@ -1,37 +1,29 @@
-export interface Contact {
-    name: string;
-    age: number;
-    phone: string;
-}
+import {showHideError, showHideLoader, updateInteface} from "./dom-manipulation/domManipulation";
+import {Location} from "./model/weatherResponse";
+import {getWeather} from "./networking/weather";
 
-export class ContactManager {
-    private serialId = "123Sdxlkd";
-    private contacts: Contact[] = [
-        { name: "Michael", age: 42, phone: "622632634"},
-        { name: "Jim", age: 31, phone: "678234678"},
-        { name: "Pam", age: 30, phone: "692893123"},
-        { name: "Andy", age: 39, phone: "624893409"},
-        { name: "Ryan", age: 27, phone: "612345982"},
-    ];
+/**
+ * Clase encargada de obtener y gestionar permisos y coordenada del navegador
+ */
+export class GeoLocationBrowser {
 
-    getSerialId(): String {
-        return this.serialId;
+    async  success(position: any) {
+        console.log("Got position", position.coords);
+        const cords = new Location(position.coords.latitude, position.coords.longitude);
+        const weather = await getWeather(null, cords);
+        updateInteface(weather);
     }
 
-    getAllContacts(): Contact[] {
-        return this.contacts;
+     error(err: any) {
+        showHideLoader(false);
+        showHideError("Por favor acepta los permisos de geolocalizacion para adquirir tu ubicacion automaticamente.", true);
     }
 
-    getTotalNumber(): Number {
-        return this.contacts.length
+    getCurrentPosition() {
+        showHideLoader(true);
+        navigator.geolocation.getCurrentPosition(this.success, this.error);
     }
 
-    addNewContact(contact: Contact) {
-        this.contacts.push(contact);
-    }
 
-    getOlderContact(): Contact {
-        return this.contacts.sort((a,b) => a.age-b.age)[0];
-    }
 }
 

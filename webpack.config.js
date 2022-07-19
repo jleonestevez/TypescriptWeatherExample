@@ -1,10 +1,9 @@
-const webpack = require("webpack");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
-const config = {
+const Dotenv = require('dotenv-webpack');
+module.exports = env => ({
   entry: "./src/index.ts",
   devtool: "inline-source-map",
   output: {
@@ -48,6 +47,9 @@ const config = {
     }),
     new MiniCssExtractPlugin(),
     new FaviconsWebpackPlugin("./src/images/icon.png"),
+    new Dotenv({
+      path: `src/env/.env.${env.NODE_ENV}`,
+    }),
   ],
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
@@ -55,8 +57,6 @@ const config = {
   devServer: {
     contentBase: path.join(__dirname, "dist"),
     compress: true,
-    port: 9000,
+    port: 9100,
   },
-};
-
-module.exports = config;
+});

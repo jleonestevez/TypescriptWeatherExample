@@ -1,5 +1,25 @@
-import { WeatherResponse } from "../model/weatherResponse";
+import {GeoPoint, WeatherResponse} from "../model/weatherResponse";
+import {showHideLoader} from "../dom-manipulation/domManipulation";
 
-const API_CURRENT = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=ac6f213887b95d0b8171b342e702e112&units=metric`
+/**
+ * Funcion encargada de obtener el clima de una ubicacion ya sea ciudad o coordenadas
+ * @param city Ciudad a buscar
+ * @param coords Coordenadas a buscar
+ */
+export const getWeather = async (city: string | null,coords: GeoPoint | null) :Promise<WeatherResponse> =>  {
+    const requestOptions: RequestInit = {
+        method: 'GET',
+        redirect: 'follow'
+    };
+    let url: string;
+    let response: any;
+    if (coords) {
+         url = `${process.env.REACT_APP_OPEN_WEATHER_API_URL}?lat=${coords.lat}&lon=${coords.lon}&appid=${process.env.REACT_APP_OPEN_WEATHER_API_KEY}&units=metric`;
+    } else {
+         url = `${process.env.REACT_APP_OPEN_WEATHER_API_URL}?q=${city}&appid=${process.env.REACT_APP_OPEN_WEATHER_API_KEY}&units=metric`;
+    }
+    response = await fetch(url, requestOptions).then(response => response.json());
+    showHideLoader(false);
+    return response
+}
 
-// TODO: Create an async function with an argument called city to return the that of the endpoint
